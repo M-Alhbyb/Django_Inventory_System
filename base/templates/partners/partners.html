@@ -19,10 +19,19 @@
         <h2 class="text-xl font-bold text-slate-800">{% if partner_type == 'merchant' %}قائمة التجار{% elif partner_type == 'representative' %}قائمة المندوبين{% endif %}</h2>
         
         <div class="flex items-center gap-4">
-            <button onclick="AddModalFunction()" class="flex items-center gap-2 justify-between p-2 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all shadow-md hover:shadow-lg">
-                إضافة {% if partner_type == 'merchant' %}تاجر{% elif partner_type == 'representative' %}مندوب{% endif %}
+            {% if partner_type == 'merchant' %}
+            <button onclick="AddModalFunction()" class="flex items-center gap-2 justify-between p-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg">
+                إضافة 
+                تاجر
                 <i class="fas fa-plus"></i>
             </button>
+            {% elif partner_type == 'representative' %}
+            <button onclick="AddModalFunction()" class="flex items-center gap-2 justify-between p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
+                إضافة 
+                مندوب
+                <i class="fas fa-plus"></i>
+            </button>
+            {% endif %}
 
             <!-- Search Form -->
             <form method="GET" class="relative">
@@ -57,9 +66,15 @@
                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition-all">
                      <td class="py-4 px-4">
                         <div class="flex items-center space-x-3 space-x-reverse">
+                            {% if partner_type == 'merchant' %}
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
                                 {{ partner.username|make_list|first|upper }}
                             </div>
+                            {% elif partner_type == 'representative' %}
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                                {{ partner.username|make_list|first|upper }}
+                            </div>
+                            {% endif %}
                             <div>
                                 <p class="font-medium text-slate-800">{{ partner.get_full_name|default:partner.username }}</p>
                                 <p class="text-xs text-slate-500">{{ partner.email }}</p>

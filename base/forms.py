@@ -89,3 +89,26 @@ class TransactionForm(forms.ModelForm):
             'amount': 'المبلغ',
             'type': 'النوع',
         }
+
+class FeesForm(forms.Form):
+    amount = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all text-right',
+            'step': '0.01',
+            'placeholder': '0.00'
+        }),
+        label='المبلغ'
+    )
+    description = forms.CharField(
+        max_length=500,
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all text-right',
+            'rows': 3,
+            'placeholder': 'وصف المنصرف (اختياري)'
+        }),
+        label='الوصف'
+    )

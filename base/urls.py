@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import general, categories, products, inventory, partners, transactions
+from .views import general, categories, products, inventory, partners, transactions, fees, reports
 from .models import Category
 app_name = 'base'
 
@@ -22,6 +22,14 @@ urlpatterns = [
 
     # transactions
     path('transactions/', transactions.transactions_view, name='transactions'),
+    
+    # fees
+    path('fees/add/', fees.add_fees, name='add_fees'),
+    
+    # reports
+    path('reports/', reports.reports_view, name='reports'),
+    path('reports/merchant/<int:merchant_id>/', reports.merchant_report, name='merchant_report'),
+    path('reports/product/<int:product_id>/', reports.product_report, name='product_report'),
 
     # partners
     path('partners/<str:partner_type>', partners.partners_view, name='partners'),

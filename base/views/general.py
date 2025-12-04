@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect
 from base.models import Category, Product, User,  Transaction, TransactionItem
-from base.forms import CategoryForm, ProductForm
+from base.forms import CategoryForm, ProductForm, FeesForm
 import json
 
 def dashboard(request):
@@ -28,6 +28,7 @@ def dashboard(request):
     # Initialize forms
     category_form = CategoryForm()
     product_form = ProductForm()
+    fees_form = FeesForm()
     
     context = {
         'total_products': total_products,
@@ -39,6 +40,7 @@ def dashboard(request):
         'representatives': representatives,
         'category_form': category_form,
         'product_form': product_form,
+        'fees_form': fees_form,
         'products_list': json.dumps(products_list),
     }
     return render(request, 'dashboard.html', context)

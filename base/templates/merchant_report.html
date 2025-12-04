@@ -113,7 +113,7 @@
                     </td>
                     <td class="py-4 px-4">
                         {% if transaction.type == 'take' %}
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                             <i class="fas fa-shopping-cart"></i>
                             أخذ
                         </span>
@@ -125,7 +125,7 @@
                         {% endif %}
                     </td>
                     <td class="py-4 px-4">
-                        <span class="text-lg font-bold {% if transaction.type == 'take' %}text-orange-600{% else %}text-green-600{% endif %}">
+                        <span class="text-lg font-bold {% if transaction.type == 'take' %}text-red-600{% else %}text-green-600{% endif %}">
                             {{ transaction.amount|floatformat:2 }} ج.س
                         </span>
                     </td>

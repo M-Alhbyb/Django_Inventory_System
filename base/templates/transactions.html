@@ -23,13 +23,13 @@
     </div>
     
     <!-- Take Transactions -->
-    <div class="bg-white rounded-xl shadow-md p-4 border border-orange-200 hover:shadow-lg transition-all group">
+    <div class="bg-white rounded-xl shadow-md p-4 border border-red-200 hover:shadow-lg transition-all group">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-medium text-orange-600 mb-1">معاملات أخذ</p>
-                <h3 class="text-2xl font-bold text-orange-700">{{ total_take }}</h3>
+                <p class="text-xs font-medium text-red-600 mb-1">معاملات أخذ</p>
+                <h3 class="text-2xl font-bold text-red-700">{{ total_take }}</h3>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform">
+            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform">
                 <i class="fas fa-shopping-cart text-white text-lg"></i>
             </div>
         </div>
@@ -62,13 +62,13 @@
     </div>
     
     <!-- Fees Transactions -->
-    <div class="bg-white rounded-xl shadow-md p-4 border border-red-200 hover:shadow-lg transition-all group">
+    <div class="bg-white rounded-xl shadow-md p-4 border border-gray-200 hover:shadow-lg transition-all group">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-medium text-red-600 mb-1">معاملات منصرف</p>
-                <h3 class="text-2xl font-bold text-red-700">{{ total_fees }}</h3>
+                <p class="text-xs font-medium text-gray-600 mb-1">معاملات منصرف</p>
+                <h3 class="text-2xl font-bold text-gray-700">{{ total_fees }}</h3>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform">
+            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform">
                 <i class="fas fa-receipt text-white text-lg"></i>
             </div>
         </div>
@@ -161,7 +161,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                {% for transaction in transactions %}
+                {% for transaction in page_obj %}
                 <tr class="hover:bg-slate-50 transition-all group">
                     <td class="py-4 px-4">
                         <div class="flex items-center gap-2">
@@ -188,7 +188,7 @@
                     </td>
                     <td class="py-4 px-4">
                         {% if transaction.type == 'take' %}
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                             <i class="fas fa-shopping-cart"></i>
                             أخذ
                         </span>
@@ -203,7 +203,7 @@
                             إرجاع
                         </span>
                         {% elif transaction.type == 'fees' %}
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
                             <i class="fas fa-receipt"></i>
                             منصرف
                         </span>
@@ -292,6 +292,69 @@
                 {% endfor %}
             </tbody>
         </table>
+     </div> 
+     {% if page_obj.has_other_pages %}
+    <!-- Mobile view -->
+    <div class="flex flex-1 justify-between sm:hidden">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">السابق</a>
+        {% else %}
+            <span class="relative inline-flex items-center rounded-md border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed">السابق</span>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">التالي</a>
+        {% else %}
+            <span class="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed">التالي</span>
+        {% endif %}
+    </div>
+
+    <!-- Desktop view -->
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+            
+        </div>
+        <div>
+            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <!-- Previous Page -->
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">
+                        <span class="sr-only">السابق</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-300 ring-1 ring-inset ring-slate-300 cursor-not-allowed">
+                        <span class="sr-only">السابق</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </span>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <span aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">{{ i }}</span>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                        <a href="?page={{ i }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next Page -->
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">
+                        <span class="sr-only">التالي</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-300 ring-1 ring-inset ring-slate-300 cursor-not-allowed">
+                        <span class="sr-only">التالي</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </span>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
     </div>
 </div>
 

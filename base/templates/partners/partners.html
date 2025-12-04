@@ -62,7 +62,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for partner in partners %}
+                {% for partner in page_obj %}
                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition-all">
                      <td class="py-4 px-4">
                         <div class="flex items-center space-x-3 space-x-reverse">
@@ -76,7 +76,7 @@
                             </div>
                             {% endif %}
                             <div>
-                                <p class="font-medium text-slate-800">{{ partner.get_full_name|default:partner.username }}</p>
+                                <p class="font-medium text-slate-800 partner-fullname-{{ partner.id }}">{{ partner.get_full_name|default:partner.username }}</p>
                                 <p class="text-xs text-slate-500">{{ partner.email }}</p>
                             </div>
                         </div>
@@ -93,10 +93,10 @@
                         "{% url 'base:representative_detail' partner.id %}"
                         {% endif %}
                         
-                        class="text-slate-400 hover:text-primary-600 transition-colors" title="عرض">
+                        class="text-slate-400 hover:text-gray-600 transition-colors" title="عرض">
                             <i class="fas fa-eye"></i>
                         </a>
-                        <button onclick="EditModalFunction({{ partner.id }})" class="text-slate-400 hover:text-green-600 transition-colors" title="تعديل">
+                        <button onclick="EditModalFunction({{ partner.id }})" class="text-slate-400 hover:text-gray-600 transition-colors" title="تعديل">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button onclick="DeleteModalFunction({{ partner.id }})" class="text-slate-400 hover:text-red-600 transition-colors" title="حذف">
@@ -119,6 +119,73 @@
             </tbody>
         </table>
     </div>
+    {% if page_obj.has_other_pages %}
+        <!-- Mobile view -->
+    <div class="flex flex-1 justify-between sm:hidden">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">السابق</a>
+        {% else %}
+            <span class="relative inline-flex items-center rounded-md border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed">السابق</span>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">التالي</a>
+        {% else %}
+            <span class="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed">التالي</span>
+        {% endif %}
+    </div>
+
+    <!-- Desktop view -->
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+        </div>
+        <div>
+            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <!-- Previous Page -->
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">
+                        <span class="sr-only">السابق</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-300 ring-1 ring-inset ring-slate-300 cursor-not-allowed">
+                        <span class="sr-only">السابق</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </span>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <span aria-current="page" class="relative z-10 inline-flex items-center 
+                        {% if partner_type == 'merchant' %}
+                        bg-orange-600
+                        {% elif partner_type == 'representative' %}
+                        bg-purple-600
+                        {% endif %}
+                         px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">{{ i }}</span>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                        <a href="?page={{ i }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next Page -->
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0">
+                        <span class="sr-only">التالي</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-300 ring-1 ring-inset ring-slate-300 cursor-not-allowed">
+                        <span class="sr-only">التالي</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </span>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
 </div>
 
 {% include 'partials/partners-modals.html' with partner_type=partner_type %}

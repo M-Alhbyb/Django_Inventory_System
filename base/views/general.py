@@ -1,8 +1,8 @@
-
 from django.shortcuts import render, redirect
 from base.models import Category, Product, User,  Transaction, TransactionItem
 from base.forms import CategoryForm, ProductForm, FeesForm
 import json
+from django.core.paginator import Paginator
 
 def dashboard(request):
     # Get counts for stats
@@ -18,7 +18,10 @@ def dashboard(request):
     representatives = User.objects.filter(user_type='representative').all()
     
     # Get recent transactions
-    recent_transactions = Transaction.objects.order_by('-id')[:5]
+    recent_transactions = Transaction.objects.order_by('-id')
+    recent_transactions = Paginator(recent_transactions, 5)
+    page_number = request.GET.get("page")
+    page_obj = recent_transactions.get_page(page_number)
     
     # Get products for transaction modals
     products = Product.objects.all()
@@ -42,5 +45,6 @@ def dashboard(request):
         'product_form': product_form,
         'fees_form': fees_form,
         'products_list': json.dumps(products_list),
+        'page_obj':page_obj,
     }
     return render(request, 'dashboard.html', context)

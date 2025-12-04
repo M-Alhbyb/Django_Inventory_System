@@ -148,12 +148,12 @@ function EditModalFunction(partnerId) {
 
 // Delete partner Modal
 function DeleteModalFunction(partnerId) {
-  const modal = document.getElementById("deletepartnerModal");
-  const form = document.getElementById("deletepartnerForm");
-  const closeBtn = document.getElementById("closeDeletepartnerModal");
-  const cancelBtn = document.getElementById("cancelDeletepartner");
+  const modal = document.getElementById("deletePartnerModal");
+  const form = document.getElementById("deletePartnerForm");
+  const closeBtn = document.getElementById("closeDeletePartnerModal");
+  const cancelBtn = document.getElementById("cancelDeletePartner");
   const errorMessage = document.getElementById("deleteErrorMessage");
-  const nameSpan = document.getElementById("deletepartnerName");
+  const nameSpan = document.getElementById("deletePartnerName");
 
   // Get partner name
   const name = document

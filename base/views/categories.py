@@ -3,14 +3,18 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from base.models import Category
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 def categories_view(request):
     categories = Category.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(categories, 10)
+    page_obj = paginator.get_page(page)
     if request.method == 'GET':
         q = request.GET.get('q')
         if q:
             categories = categories.filter(name__icontains=q)
-    return render(request, 'categories.html', {'categories': categories})
+    return render(request, 'categories.html', {'categories': categories, 'page_obj': page_obj})
 
 @require_http_methods(["POST"])
 def add_category(request):

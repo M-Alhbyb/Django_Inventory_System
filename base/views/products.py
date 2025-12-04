@@ -4,15 +4,19 @@ from django.views.decorators.http import require_http_methods
 from base.models import Category, Product
 from django.contrib import messages
 from base.forms import ProductForm
+from django.core.paginator import Paginator
 
 def products_view(request):
     products = Product.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products, 10)
+    page_obj = paginator.get_page(page)
     if request.method == 'GET':
         q = request.GET.get('q')
         if q:
             products = products.filter(name__icontains=q)
     form = ProductForm()
-    return render(request, 'products.html', {'products': products, 'form': form})
+    return render(request, 'products.html', {'products': products, 'form': form, 'page_obj': page_obj})
 
 @require_http_methods(["POST"])
 def add_product(request):

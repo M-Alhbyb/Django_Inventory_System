@@ -1,1 +1,4 @@
-# verify quantity before sell
+[ ] - Multi Languages i18n 
+[ ] - Pagination
+[ ] - Deleted Transactions Tag
+[ ] - 

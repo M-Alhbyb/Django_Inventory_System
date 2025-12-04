@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django.db.models import Q
 from base.models import Transaction, User
+from django.core.paginator import Paginator
 
 def transactions_view(request):
     # Get all transactions
     transactions = Transaction.objects.select_related('user').prefetch_related('items__product').order_by('-date')
-    
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     # Handle search
     q = request.GET.get('q')
     if q:
@@ -34,7 +37,7 @@ def transactions_view(request):
     total_fees = transactions.filter(type='fees').count()
     
     context = {
-        'transactions': transactions,
+        'page_obj': page_obj,
         'total_transactions': total_transactions,
         'total_take': total_take,
         'total_payment': total_payment,

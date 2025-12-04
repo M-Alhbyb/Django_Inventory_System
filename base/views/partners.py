@@ -9,6 +9,8 @@ from decimal import Decimal
 
 from base.forms import UserForm
 
+from django.core.paginator import Paginator
+
 def get_partner_type_display(partner_type):
     if partner_type == 'merchant':
         return 'تاجر'
@@ -17,6 +19,7 @@ def get_partner_type_display(partner_type):
     return ''
 
 def partners_view(request, partner_type):
+    
     partners = User.objects.filter(user_type=partner_type).all()
     
     # Handle search
@@ -32,8 +35,12 @@ def partners_view(request, partner_type):
     user_form = UserForm()
     edit_user_form = UserForm(prefix='edit')
 
+    paginator = Paginator(partners, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'partners': partners,
+        'page_obj': page_obj,
         'user_form': user_form,
         'edit_user_form': edit_user_form,
         'partner_type': partner_type,

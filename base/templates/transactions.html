@@ -133,6 +133,20 @@
             </a>
         </div>
     </form>
+    <form method="POST" class="flex gap-3 items-center justify-center mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="export" value="1">
+        <button type="submit"
+            class="flex-1 md:flex-none px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg font-medium">
+            <i class="fas fa-file-excel ml-2"></i>
+            تصدير المعاملات
+        </button>
+        <button type="button" onclick="openImportModal()"
+            class="flex-1 md:flex-none px-6 py-2.5 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg font-medium">
+            <i class="fas fa-file-import ml-2"></i>
+            استيراد المعاملات
+        </button>
+    </form>
 </div>
 
 <!-- Transactions Table -->
@@ -358,10 +372,192 @@
     </div>
 </div>
 
+<!-- Import Transactions Modal -->
+<div id="import-modal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeImportModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 transform transition-all">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                        <i class="fas fa-file-import text-white"></i>
+                    </div>
+                    استيراد المعاملات
+                </h3>
+                <button onclick="closeImportModal()" class="p-2 rounded-lg hover:bg-slate-100 transition-all text-slate-500 hover:text-slate-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Form -->
+            <form id="import-form" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="import">
+                {% csrf_token %}
+                
+                <!-- File Upload Area -->
+                <div id="drop-zone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-green-500 hover:bg-green-50/50 transition-all cursor-pointer mb-4">
+                    <input type="file" name="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden" required>
+                    
+                    <div id="upload-prompt">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-slate-400 text-2xl"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium mb-1">اسحب الملف هنا أو انقر للاختيار</p>
+                        <p class="text-sm text-slate-500">يدعم ملفات Excel (.xlsx, .xls) و CSV</p>
+                    </div>
+                    
+                    <div id="file-selected" class="hidden">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                            <i class="fas fa-file-excel text-green-600 text-2xl"></i>
+                        </div>
+                        <p id="file-name" class="text-slate-700 font-medium mb-1"></p>
+                        <p id="file-size" class="text-sm text-slate-500"></p>
+                        <button type="button" onclick="clearFile(event)" class="mt-2 text-red-500 hover:text-red-600 text-sm font-medium">
+                            <i class="fas fa-trash ml-1"></i>
+                            إزالة الملف
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Info Box -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                        <div class="text-sm text-blue-700">
+                            <p class="font-medium mb-1">تنسيق الملف المطلوب:</p>
+                            <p>يجب أن يحتوي الملف على الأعمدة التالية:</p>
+                            <ul class="list-disc list-inside mt-1 mr-2 text-blue-600">
+                                <li>رقم المعاملة</li>
+                                <li>المستخدم</li>
+                                <li>نوع المعاملة</li>
+                                <li>التاريخ</li>
+                                <li>العناصر</li>
+                                <li>المجموع</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button type="submit" id="submit-btn" disabled
+                        class="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium shadow-md hover:from-green-600 hover:to-green-700 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md">
+                        <i class="fas fa-upload ml-2"></i>
+                        استيراد
+                    </button>
+                    <button type="button" onclick="closeImportModal()"
+                        class="px-6 py-3 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all font-medium">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+// Toggle Products Row
 function toggleProducts(transactionId) {
     const row = document.getElementById(`products-${transactionId}`);
     row.classList.toggle('hidden');
 }
+
+// Import Modal Functions
+const importModal = document.getElementById('import-modal');
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const uploadPrompt = document.getElementById('upload-prompt');
+const fileSelected = document.getElementById('file-selected');
+const fileName = document.getElementById('file-name');
+const fileSize = document.getElementById('file-size');
+const submitBtn = document.getElementById('submit-btn');
+
+function openImportModal() {
+    importModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImportModal() {
+    importModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    clearFile();
+}
+
+// Click to select file
+dropZone.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// File input change
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+// Drag and Drop
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-green-500', 'bg-green-50');
+});
+
+dropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-green-500', 'bg-green-50');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-green-500', 'bg-green-50');
+    
+    if (e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        // Validate file type
+        const validTypes = ['.xlsx', '.xls', '.csv'];
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        
+        if (validTypes.includes(fileExt)) {
+            fileInput.files = e.dataTransfer.files;
+            handleFile(file);
+        } else {
+            alert('يرجى اختيار ملف Excel أو CSV');
+        }
+    }
+});
+
+function handleFile(file) {
+    uploadPrompt.classList.add('hidden');
+    fileSelected.classList.remove('hidden');
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    submitBtn.disabled = false;
+}
+
+function clearFile(event) {
+    if (event) event.stopPropagation();
+    fileInput.value = '';
+    uploadPrompt.classList.remove('hidden');
+    fileSelected.classList.add('hidden');
+    submitBtn.disabled = true;
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !importModal.classList.contains('hidden')) {
+        closeImportModal();
+    }
+});
 </script>
 {% endblock %}

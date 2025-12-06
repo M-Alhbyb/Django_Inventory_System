@@ -5,15 +5,12 @@ from base.models import Transaction, TransactionItem, Product, User, Category
 from decimal import Decimal
 from datetime import datetime, timedelta
 from django.utils import timezone
+from base.constants import FirstDayOfMonth
 
 
 def reports_view(request):
-    """
-    Main reports dashboard with various analytics and insights
-    """
-    # Get date range from request or default to last 30 days
     end_date = timezone.now()
-    start_date = end_date - timedelta(days=30)
+    start_date = end_date.replace(day=FirstDayOfMonth.get())
     
     # Parse custom date range if provided
     if request.GET.get('start_date'):
@@ -23,7 +20,6 @@ def reports_view(request):
         end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d')
         end_date = timezone.make_aware(end_date)
     
-    # Financial Summary
     total_sales = Transaction.objects.filter(
         type='take',
         date__gte=start_date,
@@ -225,3 +221,4 @@ def product_report(request, product_id):
     }
     
     return render(request, 'product_report.html', context)
+

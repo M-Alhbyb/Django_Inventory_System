@@ -22,9 +22,18 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    estimated_stock_out = models.DateTimeField(null=True, blank=True)
+    
     def __str__(self):
         return self.name
+    
+    @property
+    def days_until_stock_out(self):
+        if self.estimated_stock_out:
+            from django.utils import timezone
+            delta = self.estimated_stock_out - timezone.now()
+            return max(delta.days, 0)
+        return None
     
     class Meta:
         verbose_name = "المنتج"
@@ -50,7 +59,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "المستخدم"
         verbose_name_plural = "المستخدمين"
-
 
 TRANSACTION_TYPES = (
     ('take', 'أخذ'),

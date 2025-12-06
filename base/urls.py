@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import general, categories, products, inventory, partners, transactions, fees, reports
+from .views import general, categories, products, inventory, partners, transactions, fees, reports, ai
 from .models import Category
 app_name = 'base'
 
@@ -54,4 +54,10 @@ urlpatterns = [
     path('representatives/delete/<int:partner_id>/', partners.delete_partner, name='delete_representative'),
     path('representatives/<int:partner_id>/', partners.partner_detail, name='representative_detail'),
     path('representatives/<int:partner_id>/transaction/<int:transaction_id>/delete/', partners.delete_transaction, name='representative_delete_transaction'),
+
+    # AI
+    path('ai/', ai.ai_view, name='ai'),
+    path('ai/refresh/', ai.ai_refresh, name='ai_refresh'),
+    path('status/<str:task_id>/', ai.get_process_status, name='get_process_status'),
+
 ]

@@ -19,7 +19,7 @@
 ## 🎬 Demo
 
 <!-- VIDEO_PLACEHOLDER: Add your demo video URL here -->
-[![Demo Video](https://img.shields.io/badge/▶_Watch_Demo-Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](YOUR_DEMO_VIDEO_URL_HERE)
+![Demo Video](https://github.com/M-Alhbyb/Django_Inventory_System/blob/master/demo/demo.mp4)
 
 ---
 

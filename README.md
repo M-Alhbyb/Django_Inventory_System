@@ -21,6 +21,8 @@
 <!-- VIDEO_PLACEHOLDER: Add your demo video URL here -->
 
 ![Demo Video](https://github.com/M-Alhbyb/Django_Inventory_System/blob/master/demo/demo.gif)
+
+
 [![Demo Video](https://img.shields.io/badge/▶_Watch_Full_Demo-Video_On_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/m-t_s0jpSo8)
 
 ---
